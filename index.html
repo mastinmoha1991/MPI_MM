@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MPI Pecahan Biasa – Matematika Kelas IV MI</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<style>
+:root{--em:#059669;--em2:#047857;--em3:#064e3b;--eml:#d1fae5;--gold:#d4a017;--goldl:#fef3c7;--ink:#0f2a22;--bad:#dc2626;--ok:#16a34a}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',sans-serif;color:var(--ink);background:linear-gradient(135deg,#064e3b 0%,#047857 55%,#0f766e 100%);font-size:clamp(15px,1.5vw,18px);line-height:1.55}
+.screen{position:fixed;inset:0;overflow-y:auto;overflow-x:hidden;display:none;-webkit-overflow-scrolling:touch}
+.screen.active{display:block;animation:fadeIn .5s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:none}}
+@keyframes slideIn{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-14px) rotate(3deg)}}
+@keyframes segPulse{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.07);opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.wrap{max-width:1100px;margin:0 auto;padding:clamp(12px,3vw,28px)}
+.glass{background:rgba(255,255,255,.95);border-radius:22px;box-shadow:0 10px 40px rgba(0,0,0,.22);padding:clamp(14px,3vw,28px)}
+h1,h2,h3{line-height:1.2}
+.btn{font:inherit;font-weight:800;border:0;border-radius:999px;padding:.7em 1.4em;cursor:pointer;background:linear-gradient(135deg,#10b981,#047857);color:#fff;box-shadow:0 4px 0 #064e3b;transition:.15s;display:inline-flex;align-items:center;gap:.5em;justify-content:center;text-align:center}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 #064e3b}
+.btn.gold{background:linear-gradient(135deg,#f5c542,#d4a017);color:#3b2a00;box-shadow:0 4px 0 #8a6a05}
+.btn.ghost{background:#fff;color:#047857;box-shadow:0 4px 0 #a7f3d0;border:2px solid #a7f3d0}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.row.c{justify-content:center}
+.badge{display:inline-block;padding:.25em .8em;border-radius:999px;font-weight:800;font-size:.8em;background:var(--goldl);color:#7a5a00;border:1px solid #f3d27a}
+.badge.g{background:var(--eml);color:var(--em3);border-color:#a7f3d0}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 .15em;font-weight:800;font-size:.95em}
+.frac b{padding:0 .3em;border-bottom:2px solid currentColor;font-weight:800}
+.frac i{font-style:normal;padding:0 .3em}
+/* splash */
+#splash{background:radial-gradient(circle at 50% 40%,#10b981,#064e3b 70%)}
+.center{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:#fff;padding:20px}
+.spin{animation:spin 2.2s linear infinite}
+.loader{width:160px;height:6px;border-radius:9px;background:rgba(255,255,255,.25);overflow:hidden;margin-top:22px}
+.loader i{display:block;height:100%;width:0;background:#f5c542;animation:load 1.8s forwards}
+@keyframes load{to{width:100%}}
+/* cover */
+.cover{min-height:100dvh;display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:center;max-width:1100px;margin:0 auto;padding:clamp(14px,3vw,32px)}
+.cover .txt{color:#fff}
+.cover h1{font-size:clamp(2.2rem,6vw,4.2rem);color:#fde68a;text-shadow:0 4px 18px rgba(0,0,0,.3);margin:.3em 0}
+.cover .sub{opacity:.92;margin-bottom:1.2em}
+.stage{position:relative;display:flex;align-items:center;justify-content:center}
+.stage svg{width:min(78vw,380px);height:auto;filter:drop-shadow(0 14px 24px rgba(0,0,0,.35))}
+.seg{animation:segPulse 4s ease-in-out infinite;transform-origin:130px 130px}
+.fl{position:absolute;background:rgba(255,255,255,.95);color:var(--em3);border-radius:16px;padding:.25em .7em;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.25);animation:floaty 4s ease-in-out infinite;font-size:1.1rem}
+.cover .btns{display:flex;flex-direction:column;gap:12px;max-width:340px}
+.cover .btns .btn{padding:.85em 1.4em}
+/* overlay */
+.overlay{position:fixed;inset:0;background:rgba(6,40,30,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.overlay.show{display:flex}
+.mcard{background:rgba(255,255,255,.97);border-radius:24px;max-width:580px;width:100%;max-height:90dvh;overflow:auto;padding:clamp(16px,4vw,28px);animation:pop .35s;box-shadow:0 20px 60px rgba(0,0,0,.4);border:2px solid rgba(212,160,23,.5)}
+.mcard h2{color:var(--em3);margin-bottom:.5em}
+.avatar{width:120px;height:120px;border-radius:50%;border:5px solid var(--gold);box-shadow:0 6px 20px rgba(0,0,0,.25);overflow:hidden;margin:0 auto 12px;background:var(--em2);display:flex;align-items:center;justify-content:center}
+.avatar img{width:100%;height:100%;object-fit:cover}
+.avatar .ini{color:#fff;font-weight:800;font-size:2.4rem;display:none;width:100%;height:100%;align-items:center;justify-content:center}
+.ar{font-family:'Amiri','Traditional Arabic',serif;font-size:1.65em;direction:rtl;text-align:right;line-height:2;color:var(--em3)}
+.ayat{background:linear-gradient(135deg,#ecfdf5,#fffbeb);border:2px solid #f3d27a;border-radius:16px;padding:14px 16px;margin-top:10px}
+.ayat .ref{font-weight:800;color:#8a6a05;font-size:.9em}
+.ayat .tr{font-style:italic;margin:.3em 0}
+/* form */
+.field{margin-bottom:16px}
+.field label{display:block;font-weight:800;margin-bottom:6px;color:var(--em3)}
+.field input{width:100%;font:inherit;padding:.8em 1em;border-radius:14px;border:2px solid #a7f3d0;background:#fff;outline:none}
+.field input:focus{border-color:var(--em);box-shadow:0 0 0 4px rgba(16,185,129,.2)}
+.field.bad input{border-color:var(--bad)}
+.err{color:var(--bad);font-weight:700;font-size:.85em;margin-top:4px;display:none}
+.field.bad .err{display:block}
+/* slide guide */
+.slidecard{animation:slideIn .4s ease}
+.dots{display:flex;gap:8px;justify-content:center;margin:12px 0}
+.dots i{width:12px;height:12px;border-radius:50%;background:#a7f3d0}
+.dots i.on{background:var(--gold);transform:scale(1.3)}
+.dots i.dn{background:var(--em)}
+/* menu */
+.mhead{display:flex;align-items:center;gap:14px;color:#fff;margin-bottom:18px;flex-wrap:wrap}
+.mhead .avatar{width:64px;height:64px;margin:0;border-width:3px}
+.mhead .avatar .ini{font-size:1.2rem}
+.menus{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.mc{background:rgba(255,255,255,.95);border-radius:24px;padding:22px;text-align:center;cursor:pointer;transition:.2s;border:3px solid transparent;position:relative}
+.mc:hover{transform:translateY(-5px)}
+.mc.open{border-color:var(--gold)}
+.mc.lock{filter:grayscale(.55);opacity:.85}
+.mc .ic{font-size:3rem}
+.mc .st{position:absolute;top:12px;right:14px;font-size:1.5rem}
+.mc h3{color:var(--em3);margin:.3em 0}
+.mc p{font-size:.9em;color:#335}
+/* materi */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#fff;margin-bottom:12px}
+.pbar{height:10px;border-radius:9px;background:rgba(255,255,255,.3);overflow:hidden;margin-bottom:14px}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#f5c542,#fde68a);transition:width .4s}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px}
+.box{border-radius:16px;padding:14px 16px}
+.box.lok{background:#e0f2fe;border:2px solid #7dd3fc}
+.box.kbc{background:#fce7f3;border:2px solid #f9a8d4}
+.box.kon{background:#ecfdf5;border:2px solid #86efac}
+.box h4{margin-bottom:.3em}
+.vis{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;align-items:flex-end;margin:12px 0;padding:12px;background:#f0fdf4;border-radius:16px}
+.vis figure{text-align:center}
+.vis figcaption{font-weight:800;margin-top:4px}
+.stim{background:#fffbeb;border-left:6px solid var(--gold);border-radius:14px;padding:14px 16px;margin:12px 0;text-align:justify}
+.act{margin-top:16px;padding:16px;border-radius:18px;background:#fff;border:3px dashed var(--em)}
+.act>h4{color:var(--em2);margin-bottom:8px}
+.q{font-weight:800;margin-bottom:10px}
+.opts{display:grid;gap:10px}
+.opt{font:inherit;text-align:left;display:flex;gap:10px;align-items:center;background:#f0fdf4;border:2px solid #a7f3d0;border-radius:14px;padding:.7em 1em;cursor:pointer;transition:.15s;color:var(--ink)}
+.opt:hover:not(:disabled){background:#dcfce7;transform:translateX(3px)}
+.opt .L{flex:none;width:2em;height:2em;border-radius:50%;background:var(--em);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.opt.sel{border-color:var(--gold);background:#fffbeb}
+.opt.sel .L{background:var(--gold)}
+.opt.ok{background:#bbf7d0;border-color:var(--ok)}
+.opt.bad{background:#fecaca;border-color:var(--bad)}
+.opt:disabled{cursor:default}
+.fb{margin-top:10px;border-radius:12px;padding:10px 14px;font-weight:700;display:none}
+.fb.ok{display:block;background:#dcfce7;color:#14532d}
+.fb.bad{display:block;background:#fee2e2;color:#7f1d1d}
+.dd{display:grid;gap:12px}
+.pool{display:flex;flex-wrap:wrap;gap:10px;padding:12px;background:#f0fdf4;border-radius:14px;min-height:56px;border:2px dashed #86efac}
+.chip{padding:.5em 1em;border-radius:12px;background:#fff;border:2px solid var(--em);font-weight:800;cursor:grab;user-select:none;box-shadow:0 3px 0 #a7f3d0;touch-action:manipulation}
+.chip.sel{background:var(--goldl);border-color:var(--gold);transform:scale(1.08)}
+.chip.okc{background:#bbf7d0;border-color:var(--ok);cursor:default;box-shadow:none}
+.chip.shake{animation:shake .4s;border-color:var(--bad)}
+.targets{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.tbox{border:2px solid #7dd3fc;background:#f0f9ff;border-radius:14px;padding:10px;cursor:pointer;min-height:84px}
+.tbox.over{background:#e0f2fe;border-style:dashed}
+.tbox .lb{font-weight:800;font-size:.92em;margin-bottom:6px;color:#075985}
+.tbox .drops{display:flex;gap:6px;flex-wrap:wrap;min-height:34px}
+.ord{list-style:none;display:grid;gap:8px}
+.ord li{display:flex;align-items:center;gap:10px;background:#fff;border:2px solid var(--em);border-radius:12px;padding:.55em .9em;cursor:pointer;font-weight:800;user-select:none;touch-action:manipulation}
+.ord li.sel{background:var(--goldl);border-color:var(--gold)}
+.ord li .n{width:1.8em;height:1.8em;border-radius:50%;background:var(--em);color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.ord li .h{margin-left:auto;opacity:.5}
+.ord.okl li{background:#bbf7d0;border-color:var(--ok)}
+.chk{display:flex;gap:10px;align-items:flex-start;background:#f0fdf4;border:2px solid #a7f3d0;border-radius:14px;padding:.6em 1em;cursor:pointer}
+.chk input{margin-top:.3em;width:1.2em;height:1.2em;accent-color:var(--em)}
+.chk.ok{background:#bbf7d0;border-color:var(--ok)}
+.chk.bad{background:#fecaca;border-color:var(--bad)}
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:16px;flex-wrap:wrap}
+.hint{font-size:.85em;opacity:.8;margin-top:6px}
+.lv{display:inline-block;padding:.2em .8em;border-radius:999px;color:#fff;font-weight:800;font-size:.85em}
+.lv1{background:#16a34a}.lv2{background:#f59e0b}.lv3{background:#dc2626}
+/* report */
+.rpt{background:#fff;color:#111;padding:22px;border-radius:12px}
+.rpt .kop{display:flex;gap:14px;align-items:center;border-bottom:4px double #047857;padding-bottom:10px;margin-bottom:12px}
+.rpt .kop .avatar{width:70px;height:70px;margin:0;border-width:3px;flex:none}
+.rpt .kop .avatar .ini{font-size:1.3rem}
+.rpt h2{color:#064e3b;font-size:1.25em}
+.rpt h3{color:#047857;margin:14px 0 6px;font-size:1.05em;border-left:5px solid #d4a017;padding-left:8px}
+.rpt table{width:100%;border-collapse:collapse;font-size:.9em;margin:6px 0}
+.rpt td,.rpt th{border:1px solid #9ca3af;padding:5px 8px;text-align:left;vertical-align:top}
+.rpt th{background:#d1fae5}
+.rpt .big{font-size:2.4em;font-weight:800;color:#047857}
+.lvbar{height:14px;background:#e5e7eb;border-radius:9px;overflow:hidden;min-width:100px}
+.lvbar i{display:block;height:100%;background:#10b981}
+.pg{page-break-inside:avoid}
+.pem{margin-top:6px;font-size:.88em}
+.pem details{margin:3px 0}
+@media (max-width:820px){
+ .cover{grid-template-columns:1fr;text-align:center;padding-top:20px}
+ .cover .btns{margin:0 auto}
+ .grid2{grid-template-columns:1fr}
+ .stage{order:-1}
+}
+@media (max-width:480px){.nav .btn{flex:1}.fl{font-size:.9rem}}
+@media print{
+ body{background:#fff}
+ .no-print,#splash,.overlay{display:none!important}
+ .screen{position:static;overflow:visible}
+ .wrap{padding:0;max-width:none}
+ .rpt{box-shadow:none;padding:0}
+ .rpt details{display:block}
+ .rpt details>summary{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<section id="splash" class="screen active">
+ <div class="center">
+  <svg class="spin" width="130" height="130" viewBox="0 0 260 260" id="splashSvg"></svg>
+  <h1 style="margin-top:14px;color:#fde68a;font-size:clamp(2rem,6vw,3.4rem)">Pecahan Biasa</h1>
+  <p>Media Pembelajaran Interaktif • Matematika Kelas IV MI</p>
+  <div class="loader"><i></i></div>
+ </div>
+</section>
+
+<!-- COVER -->
+<section id="cover" class="screen">
+ <div class="cover">
+  <div class="txt">
+   <span class="badge">Matematika • Kelas IV / Fase B • MI</span>
+   <h1>Pecahan Biasa</h1>
+   <p class="sub">Belajar, bermain, dan berlatih bersama alam Gorontalo dengan penuh cinta ilmu. 🌿</p>
+   <div class="btns">
+    <button class="btn ghost" onclick="openDev()">👤 Informasi Pengembang</button>
+    <button class="btn ghost" onclick="openTujuan()">🎯 Tujuan Pembelajaran</button>
+    <button class="btn gold" onclick="go('form')">▶ MULAI</button>
+   </div>
+  </div>
+  <div class="stage">
+   <svg viewBox="0 0 260 260" id="coverSvg"></svg>
+   <div class="fl" style="top:6%;left:4%;animation-delay:0s"><span class="frac"><b>1</b><i>2</i></span></div>
+   <div class="fl" style="top:14%;right:2%;animation-delay:.8s"><span class="frac"><b>3</b><i>4</i></span></div>
+   <div class="fl" style="bottom:10%;left:2%;animation-delay:1.6s"><span class="frac"><b>1</b><i>4</i></span></div>
+   <div class="fl" style="bottom:4%;right:6%;animation-delay:2.2s"><span class="frac"><b>3</b><i>8</i></span></div>
+  </div>
+ </div>
+</section>
+
+<!-- FORM -->
+<section id="form" class="screen">
+ <div class="center">
+  <div class="glass" style="max-width:480px;width:100%;color:var(--ink);text-align:left">
+   <div style="text-align:center;font-size:3rem">🧒</div>
+   <h2 style="text-align:center;color:var(--em3);margin-bottom:14px">Siapa namamu?</h2>
+   <div class="field" id="fN"><label for="inN">Nama Lengkap Siswa</label><input id="inN" type="text" maxlength="50" placeholder="Contoh: Aisyah Putri" autocomplete="off"><div class="err" id="eN">Nama lengkap wajib diisi (minimal 3 huruf).</div></div>
+   <div class="field" id="fK"><label for="inK">Kelas</label><input id="inK" type="text" maxlength="12" placeholder="Contoh: IV-A" autocomplete="off"><div class="err" id="eK">Kelas wajib diisi.</div></div>
+   <div class="row c"><button class="btn ghost" onclick="go('cover')">← Cover</button><button class="btn gold" onclick="submitForm()">Lanjut ➜</button></div>
+  </div>
+ </div>
+</section>
+
+<!-- INTRO -->
+<section id="intro" class="screen">
+ <div class="wrap">
+  <div class="top"><h2 id="welcome">Selamat Datang!</h2></div>
+  <div class="glass" id="introBody"></div>
+ </div>
+</section>
+
+<!-- MENU -->
+<section id="menu" class="screen">
+ <div class="wrap">
+  <div class="mhead"><div id="mAv"></div><div><div style="font-size:1.4rem;font-weight:800" id="mName"></div><div id="mKelas" style="opacity:.9"></div></div><div style="margin-left:auto" class="row"><button class="btn ghost" id="btnRpt" style="display:none" onclick="showReport()">📄 Laporan</button></div></div>
+  <div class="menus">
+   <div class="mc open" id="mcB" onclick="enterMenu(1)"><div class="st" id="stB">🔓</div><div class="ic">📖</div><h3>BELAJAR</h3><p>6 slide materi mendalam dengan tantangan di setiap slide.</p><div class="badge g" id="pgB">0/6 selesai</div></div>
+   <div class="mc lock" id="mcM" onclick="enterMenu(2)"><div class="st" id="stM">🔒</div><div class="ic">🎮</div><h3>BERMAIN</h3><p>10 tantangan seru dengan stimulus literasi &amp; numerasi.</p><div class="badge g" id="pgM">Terkunci</div></div>
+   <div class="mc lock" id="mcL" onclick="enterMenu(3)"><div class="st" id="stL">🔒</div><div class="ic">📝</div><h3>BERLATIH</h3><p>10 soal asesmen berjenjang (100 poin) hingga level HOTS.</p><div class="badge g" id="pgL">Terkunci</div></div>
+  </div>
+ </div>
+</section>
+
+<!-- BELAJAR -->
+<section id="belajar" class="screen">
+ <div class="wrap">
+  <div class="top"><button class="btn ghost" onclick="go('menu')">🏠 Menu</button><b id="belTitle">Belajar</b><span class="badge" id="belCnt"></span></div>
+  <div class="pbar"><i id="belBar" style="width:0"></i></div>
+  <div class="glass slidecard" id="belBody"></div>
+  <div class="nav"><button class="btn ghost" id="belPrev" onclick="belMove(-1)">← Kembali</button><button class="btn" id="belNext" onclick="belMove(1)">Selanjutnya ➜</button></div>
+ </div>
+</section>
+
+<!-- BERMAIN -->
+<section id="bermain" class="screen">
+ <div class="wrap">
+  <div class="top"><button class="btn ghost" onclick="go('menu')">🏠 Menu</button><b>🎮 Bermain</b><span class="badge" id="plyScore">Skor: 0</span></div>
+  <div class="pbar"><i id="plyBar" style="width:0"></i></div>
+  <div class="glass slidecard" id="plyBody"></div>
+ </div>
+</section>
+
+<!-- BERLATIH -->
+<section id="berlatih" class="screen">
+ <div class="wrap">
+  <div class="top"><button class="btn ghost" onclick="exitLat()">🏠 Menu</button><b>📝 Berlatih</b><span class="badge" id="latCnt"></span></div>
+  <div class="pbar"><i id="latBar" style="width:0"></i></div>
+  <div class="glass slidecard" id="latBody"></div>
+ </div>
+</section>
+
+<!-- LAPORAN -->
+<section id="laporan" class="screen">
+ <div class="wrap">
+  <div class="row no-print" style="margin-bottom:12px"><button class="btn gold" onclick="dlPDF()">⬇ Unduh / Cetak Laporan PDF</button><button class="btn ghost" onclick="go('menu')">🏠 Menu Utama</button></div>
+  <div class="rpt" id="rptArea"></div>
+ </div>
+</section>
+
+<!-- MODAL -->
+<div class="overlay" id="ov" onclick="if(event.target===this)closeM()"><div class="mcard" id="mc"></div></div>
+
+<script>
+/* ========== UTIL ========== */
+const $=(s,r=document)=>r.querySelector(s);
+const DEV={nama:'Mastin U.Moha, S.Pd.I.Gr',asal:'MIN 2 Boalemo',email:'mastinmoha1991@gmail.com',foto:'https://iili.io/CSAHRQ1.png'};
+const AYAT={
+ a1:{ar:'إِنَّا كُلَّ شَيْءٍ خَلَقْنَاهُ بِقَدَرٍ',ref:'QS. Al-Qamar [54]: 49',id:'Sesungguhnya Kami menciptakan segala sesuatu menurut ukuran.',kor:'Segala ciptaan Allah memiliki ukuran yang tepat. Pecahan membantu kita menyatakan ukuran bagian dengan tepat dan adil.'},
+ a2:{ar:'وَأَقِيمُوا الْوَزْنَ بِالْقِسْطِ وَلَا تُخْسِرُوا الْمِيزَانَ',ref:'QS. Ar-Rahman [55]: 9',id:'Dan tegakkanlah timbangan itu dengan adil dan janganlah kamu mengurangi neraca itu.',kor:'Menimbang dan membagi harus teliti dan adil. Pembilang dan penyebut yang benar membuat pembagian tidak merugikan siapa pun.'},
+ a3:{ar:'وَكُلُوا وَاشْرَبُوا وَلَا تُسْرِفُوا',ref:'QS. Al-A\'raf [7]: 31',id:'Makan dan minumlah, tetapi jangan berlebihan.',kor:'Mengambil secukupnya, misalnya sebagian dari seluruh hidangan, mengajarkan sikap tidak berlebihan. Pecahan menunjukkan "sebagian" dari "seluruhnya".'},
+ a4:{ar:'وَأَوْفُوا الْكَيْلَ إِذَا كِلْتُمْ وَزِنُوا بِالْقِسْطَاسِ الْمُسْتَقِيمِ',ref:'QS. Al-Isra\' [17]: 35',id:'Dan sempurnakanlah takaran apabila kamu menakar, dan timbanglah dengan neraca yang benar.',kor:'Takaran yang jujur tetap sama nilainya walau ditulis berbeda, seperti pecahan senilai: 1/2 = 2/4 = 4/8.'},
+ a5:{ar:'وَتَعَاوَنُوا عَلَى الْبِرِّ وَالتَّقْوَىٰ',ref:'QS. Al-Ma\'idah [5]: 2',id:'Dan tolong-menolonglah kamu dalam (mengerjakan) kebajikan dan takwa.',kor:'Saat membandingkan bagian yang diterima, kita belajar saling membantu dan berbagi dengan adil tanpa iri hati.'},
+ a6:{ar:'يَرْفَعِ اللَّهُ الَّذِينَ آمَنُوا مِنكُمْ وَالَّذِينَ أُوتُوا الْعِلْمَ دَرَجَاتٍ',ref:'QS. Al-Mujadilah [58]: 11',id:'Allah niscaya akan mengangkat (derajat) orang-orang yang beriman di antaramu dan orang-orang yang diberi ilmu beberapa derajat.',kor:'Cinta ilmu mengangkat derajat. Menguasai pecahan adalah langkah kecil menuju ilmu yang bermanfaat bagi sesama.'},
+ a7:{ar:'وَقُل رَّبِّ زِدْنِي عِلْمًا',ref:'QS. Taha [20]: 114',id:'Dan katakanlah (Muhammad), "Ya Tuhanku, tambahkanlah ilmu kepadaku."',kor:'Doa agar selalu bertambah ilmu. Mari belajar pecahan dengan semangat dan penuh syukur.'}
+};
+function H(s){return String(s).replace(/(\d+)\/(\d+)/g,'<span class="frac"><b>$1</b><i>$2</i></span>')}
+function frac(n,d){return `<span class="frac"><b>${n}</b><i>${d}</i></span>`}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function ini(n){return n.replace(/[.,]/g,' ').split(/\s+/).filter(x=>x&&!/^S\.?/i.test(x)).slice(0,2).map(x=>x[0].toUpperCase()).join('')||'MM'}
+function avatar(name,foto){return `<div class="avatar">${foto?`<img src="${foto}" alt="Foto ${name}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><span class="ini">${ini(name)}</span>`:`<span class="ini" style="display:flex">${ini(name)}</span>`}</div>`}
+function go(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===id));const e=document.getElementById(id);if(e)e.scrollTop=0;if(id==='menu')renderMenu()}
+function openM(h){$('#mc').innerHTML=h;$('#ov').classList.add('show')}
+function closeM(){$('#ov').classList.remove('show')}
+
+/* ========== SVG ========== */
+function pieSVG(n,d,r,cx,cy,fill,empty){
+ let s='';
+ if(d===1){return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${n?fill:empty}" stroke="#064e3b" stroke-width="2"/>`}
+ for(let i=0;i<d;i++){
+  const a1=(-90+i*360/d)*Math.PI/180,a2=(-90+(i+1)*360/d)*Math.PI/180;
+  const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+  s+=`<path d="M${cx} ${cy}L${x1.toFixed(2)} ${y1.toFixed(2)}A${r} ${r} 0 0 1 ${x2.toFixed(2)} ${y2.toFixed(2)}Z" fill="${i<n?fill:empty}" stroke="#064e3b" stroke-width="2"/>`;
+ }
+ return s;
+}
+function frPie(n,d,size=110){return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">${pieSVG(n,d,size/2-4,size/2,size/2,'#10b981','#fff')}</svg>`}
+function frBar(n,d,w=220,h=38,col='#10b981'){let s=`<svg width="${w}" height="${h+4}" viewBox="0 0 ${w} ${h+4}">`;const cw=(w-4)/d;for(let i=0;i<d;i++)s+=`<rect x="${2+i*cw}" y="2" width="${cw}" height="${h}" fill="${i<n?col:'#fff'}" stroke="#064e3b" stroke-width="2"/>`;return s+'</svg>'}
+function fig(svg,n,d){return `<figure>${svg}<figcaption>${frac(n,d)}</figcaption></figure>`}
+(function(){
+ const cols=['#10b981','#f5c542','#059669','#fbbf24','#047857','#fde68a','#34d399','#d4a017'];
+ let s='<circle cx="130" cy="130" r="122" fill="rgba(255,255,255,.12)"/>';
+ for(let i=0;i<8;i++){
+  const a1=(-90+i*45)*Math.PI/180,a2=(-90+(i+1)*45)*Math.PI/180,r=105,cx=130,cy=130;
+  s+=`<path class="seg" style="animation-delay:${i*0.5}s" d="M${cx} ${cy}L${(cx+r*Math.cos(a1)).toFixed(2)} ${(cy+r*Math.sin(a1)).toFixed(2)}A${r} ${r} 0 0 1 ${(cx+r*Math.cos(a2)).toFixed(2)} ${(cy+r*Math.sin(a2)).toFixed(2)}Z" fill="${cols[i]}" stroke="#064e3b" stroke-width="3"/>`;
+ }
+ s+='<circle cx="130" cy="130" r="16" fill="#064e3b"/><text x="130" y="136" text-anchor="middle" font-size="18" font-weight="800" fill="#fde68a" font-family="Nunito,sans-serif">⅛</text>';
+ $('#coverSvg').innerHTML=s;
+ $('#splashSvg').innerHTML=pieSVG(3,8,115,130,130,'#f5c542','#ecfdf5');
+})();
+
+/* ========== STATE ========== */
+const S={name:'',kelas:'',bel:[false,false,false,false,false,false],bermainOpen:false,berlatihOpen:false,play:[],playDone:false,lat:[],latDone:false,res:null};
+
+/* ========== SPLASH / COVER ========== */
+setTimeout(()=>go('cover'),1900);
+function openDev(){openM(`${avatar(DEV.nama,DEV.foto)}<h2 style="text-align:center">Informasi Pengembang</h2>
+ <table style="width:100%;font-size:.95em"><tr><td><b>Nama</b></td><td>${DEV.nama}</td></tr><tr><td><b>Asal Madrasah</b></td><td>${DEV.asal}</td></tr><tr><td><b>Email</b></td><td><a href="mailto:${DEV.email}">${DEV.email}</a></td></tr></table>
+ <div class="row c" style="margin-top:16px"><button class="btn" onclick="closeM()">⬅ Kembali ke Cover</button></div>`)}
+function openTujuan(){const a=AYAT.a7;openM(`<h2>🎯 Tujuan Pembelajaran</h2>
+ <p style="font-weight:700">Peserta didik mampu memahami Pecahan Biasa.</p>
+ <div class="ayat"><div class="ar">${a.ar}</div><div class="ref">${a.ref}</div><div class="tr">"${a.id}"</div><div style="font-size:.9em"><b>Korelasi:</b> ${a.kor}</div></div>
+ <div class="box kbc" style="margin-top:12px"><h4>💗 Pesan Kurikulum Berbasis Cinta</h4><p>Belajar pecahan adalah cara mencintai ilmu, berbagi dengan adil kepada sesama, menyayangi makhluk ciptaan Allah, menjaga kelestarian Teluk Tomini dan Danau Limboto, serta mencintai tanah air Indonesia.</p></div>
+ <div class="row c" style="margin-top:16px"><button class="btn" onclick="closeM()">⬅ Kembali ke Cover</button></div>`)}
+
+/* ========== FORM ========== */
+function submitForm(){
+ const n=$('#inN').value.trim(),k=$('#inK').value.trim();
+ const okN=n.length>=3,okK=k.length>=1;
+ $('#fN').classList.toggle('bad',!okN);$('#fK').classList.toggle('bad',!okK);
+ if(!okN||!okK)return;
+ S.name=n;S.kelas=k;$('#welcome').textContent='Selamat Datang, '+n+'! 🌟';
+ gi=0;renderGuide();go('intro');
+}
+['inN','inK'].forEach(i=>document.addEventListener('DOMContentLoaded',()=>{}));
+
+/* ========== PANDUAN ========== */
+const GUIDE=[
+ {ic:'🌴',t:'Selamat Datang di Media "Pecahan Biasa"',p:'Kamu akan belajar pecahan sambil berkeliling Gorontalo: dari pesisir Teluk Tomini, Danau Limboto, sampai ladang jagung yang luas. Belajar pecahan adalah cara mencintai ilmu dan berbagi dengan adil.'},
+ {ic:'📖',t:'Cara Belajar',p:'Pada menu BELAJAR ada 6 slide materi. Baca uraiannya, lalu selesaikan tantangan di bagian bawah slide. Tombol "Selanjutnya" baru menyala setelah tantangan selesai.'},
+ {ic:'👆',t:'Cara Menjawab',p:'Untuk pilihan ganda, ketuk jawabanmu. Untuk menyeret kartu, kamu bisa menyeret dengan mouse, atau di layar sentuh ketuk kartu lebih dulu lalu ketuk kotak tujuannya. Untuk mengurutkan, ketuk dua kartu untuk saling bertukar tempat.'},
+ {ic:'🔐',t:'Menu Terkunci Bertahap',p:'Urutannya: BELAJAR ➜ BERMAIN ➜ BERLATIH. Menu berikutnya terbuka setelah menu sebelumnya selesai. Di akhir, kamu mendapat Laporan Hasil Belajar yang bisa diunduh sebagai PDF.'}
+];
+let gi=0;
+function renderGuide(){
+ const g=GUIDE[gi],last=gi===GUIDE.length-1;
+ $('#introBody').innerHTML=`<div class="slidecard" style="text-align:center"><div style="font-size:3.6rem">${g.ic}</div><h2 style="color:var(--em3);margin:.3em 0">${g.t}</h2><p style="max-width:640px;margin:0 auto">${g.p}</p></div>
+ <div class="dots">${GUIDE.map((_,i)=>`<i class="${i===gi?'on':i<gi?'dn':''}"></i>`).join('')}</div>
+ <div class="nav"><button class="btn ghost" ${gi===0?'disabled':''} onclick="gi--;renderGuide()">← Kembali</button>${last?`<button class="btn gold" onclick="go('menu')">Masuk ke Menu Utama 🚪</button>`:`<button class="btn" onclick="gi++;renderGuide()">Selanjutnya ➜</button>`}</div>`;
+}
+
+/* ========== MENU ========== */
+function renderMenu(){
+ $('#mAv').innerHTML=avatar(S.name||'Siswa',null);
+ $('#mName').textContent=S.name;$('#mKelas').textContent='Kelas '+S.kelas+' • Pecahan Biasa';
+ const nb=S.bel.filter(Boolean).length;
+ $('#pgB').textContent=nb+'/6 selesai';
+ setLock('M',S.bermainOpen);setLock('L',S.berlatihOpen);
+ $('#pgM').textContent=!S.bermainOpen?'Terkunci':S.playDone?'Selesai ✔':S.play.length+'/10';
+ $('#pgL').textContent=!S.berlatihOpen?'Terkunci':S.latDone?'Selesai ✔':'Siap dikerjakan';
+ $('#btnRpt').style.display=S.latDone?'inline-flex':'none';
+}
+function setLock(k,open){const c=$('#mc'+k);c.classList.toggle('lock',!open);c.classList.toggle('open',open);$('#st'+k).textContent=open?'🔓':'🔒'}
+function enterMenu(n){
+ if(n===1){belIdx=S.bel.findIndex(x=>!x);if(belIdx<0)belIdx=0;renderBel();go('belajar')}
+ else if(n===2){
+  if(!S.bermainOpen)return openM(`<div style="text-align:center"><div style="font-size:3rem">🔒</div><h2>Menu Bermain Masih Terkunci</h2><p>Selesaikan dulu seluruh <b>6 slide materi</b> pada menu <b>BELAJAR</b> (termasuk tantangannya) untuk membukanya. Kamu pasti bisa! 💪</p><div class="row c" style="margin-top:14px"><button class="btn" onclick="closeM();enterMenu(1)">Ke Menu Belajar</button><button class="btn ghost" onclick="closeM()">Tutup</button></div></div>`);
+  if(S.playDone)return renderPlayRecap(true);
+  pi=S.play.length;renderPlay();go('bermain');
+ }else{
+  if(!S.berlatihOpen)return openM(`<div style="text-align:center"><div style="font-size:3rem">🔒</div><h2>Menu Berlatih Masih Terkunci</h2><p>Selesaikan dulu <b>10 tantangan</b> pada menu <b>BERMAIN</b> agar menu Berlatih terbuka.</p><div class="row c" style="margin-top:14px"><button class="btn" onclick="closeM();enterMenu(${S.bermainOpen?2:1})">Lanjutkan Belajar/Bermain</button><button class="btn ghost" onclick="closeM()">Tutup</button></div></div>`);
+  if(S.latDone)return showReport();
+  startLat();
+ }
+}
+
+/* ========== ENGINE AKTIVITAS ========== */
+function mkFb(c){const d=document.createElement('div');d.className='fb';c.appendChild(d);return d}
+function setFb(fb,ok,msg){fb.className='fb '+(ok?'ok':'bad');fb.innerHTML=(ok?'✅ ':'❌ ')+H(msg)}
+function runAct(c,a,opt,done){
+ if(a.type==='mc')actMC(c,a,opt,done);
+ else if(a.type==='mcc')actMCC(c,a,done);
+ else if(a.type==='order')actOrder(c,a,done);
+ else actDD(c,a,done);
+}
+function actMC(c,a,opt,done){
+ c.innerHTML=`<div class="q">${H(a.q)}</div><div class="opts"></div>`;
+ const box=c.querySelector('.opts'),fb=mkFb(c);let locked=false,errors=0;
+ a.opts.forEach((t,i)=>{
+  const b=document.createElement('button');b.className='opt';
+  b.innerHTML=`<span class="L">${'ABCD'[i]}</span><span>${H(t)}</span>`;
+  b.onclick=()=>{
+   if(locked)return;
+   if(i===a.ans){locked=true;b.classList.add('ok');setFb(fb,true,'Benar! '+a.exp);done({score:errors?0:10,errors})}
+   else{errors++;b.classList.add('bad');
+    if(opt.once){locked=true;[...box.children].forEach(x=>x.disabled=true);box.children[a.ans].classList.add('ok');setFb(fb,false,'Belum tepat. Jawaban yang benar: '+'ABCD'[a.ans]+'. '+a.exp);done({score:0,errors})}
+    else{b.disabled=true;setFb(fb,false,'Belum tepat, coba lagi ya! 💪')}}
+  };
+  box.appendChild(b);
+ });
+}
+function actMCC(c,a,done){
+ c.innerHTML=`<div class="q">${H(a.q)}</div><div class="opts"></div><div class="hint">Boleh memilih lebih dari satu jawaban. Kamu punya 2 kali kesempatan memeriksa.</div><div class="row" style="margin-top:10px"><button class="btn gold">Periksa Jawaban</button></div>`;
+ const box=c.querySelector('.opts'),fb=mkFb(c),btn=c.querySelector('button');let att=0;
+ a.opts.forEach((t,i)=>{const l=document.createElement('label');l.className='chk';l.innerHTML=`<input type="checkbox" value="${i}"><span>${H(t)}</span>`;box.appendChild(l)});
+ btn.onclick=()=>{
+  const labels=[...box.children];
+  const sel=labels.map((l,i)=>l.querySelector('input').checked?i:-1).filter(x=>x>=0);
+  if(!sel.length){setFb(fb,false,'Pilih minimal satu jawaban dulu ya.');return}
+  const ok=sel.length===a.ans.length&&sel.every(x=>a.ans.includes(x));att++;
+  const lock=()=>{labels.forEach((l,i)=>{l.querySelector('input').disabled=true;const should=a.ans.includes(i),pick=sel.includes(i);if(should)l.classList.add('ok');else if(pick)l.classList.add('bad')});btn.disabled=true};
+  if(ok){lock();setFb(fb,true,'Tepat sekali! '+a.exp);done({score:att===1?10:5,errors:att-1})}
+  else if(att>=2){lock();setFb(fb,false,'Belum tepat. Jawaban yang benar ditandai hijau. '+a.exp);done({score:0,errors:2})}
+  else setFb(fb,false,'Masih ada yang kurang tepat. Periksa lagi (kesempatan terakhir)!');
+ };
+}
+function actOrder(c,a,done){
+ let items=shuffle(a.items);let g=0;while(items.join('|')===a.items.join('|')&&g++<20)items=shuffle(a.items);
+ c.innerHTML=`<div class="q">${H(a.q)}</div><ul class="ord"></ul><div class="hint">Ketuk satu kartu lalu kartu lain untuk bertukar tempat, atau seret dengan mouse. Kamu punya 2 kali kesempatan memeriksa.</div><div class="row" style="margin-top:10px"><button class="btn gold">Periksa Urutan</button></div>`;
+ const ul=c.querySelector('ul'),fb=mkFb(c),btn=c.querySelector('button');let sel=null,att=0,locked=false,drag=null;
+ function draw(){
+  ul.innerHTML='';
+  items.forEach((t,i)=>{
+   const li=document.createElement('li');li.draggable=!locked;if(sel===i)li.classList.add('sel');
+   li.innerHTML=`<span class="n">${i+1}</span><span>${H(t)}</span><span class="h">⇅</span>`;
+   li.onclick=()=>{if(locked)return;if(sel===null)sel=i;else if(sel===i)sel=null;else{[items[sel],items[i]]=[items[i],items[sel]];sel=null}draw()};
+   li.ondragstart=e=>{drag=i;try{e.dataTransfer.setData('text/plain',String(i))}catch(x){}};
+   li.ondragover=e=>e.preventDefault();
+   li.ondrop=e=>{e.preventDefault();if(drag!==null&&drag!==i&&!locked){[items[drag],items[i]]=[items[i],items[drag]];sel=null;drag=null;draw()}};
+   ul.appendChild(li);
+  });
+ }
+ draw();
+ btn.onclick=()=>{
+  att++;const ok=items.join('|')===a.items.join('|');
+  if(ok){locked=true;sel=null;draw();ul.classList.add('okl');btn.disabled=true;setFb(fb,true,'Urutan sudah benar! '+a.exp);done({score:att===1?10:5,errors:att-1})}
+  else if(att>=2){locked=true;items=a.items.slice();sel=null;draw();ul.classList.add('okl');btn.disabled=true;setFb(fb,false,'Urutan yang benar sudah ditampilkan. '+a.exp);done({score:0,errors:2})}
+  else setFb(fb,false,'Urutannya belum tepat. Coba perbaiki (kesempatan terakhir)!');
+ };
+}
+function actDD(c,a,done){
+ c.innerHTML=`<div class="q">${H(a.prompt||'')}</div><div class="dd"><div class="pool"></div><div class="targets"></div></div><div class="hint">Mouse: seret kartu ke kotak. Layar sentuh: ketuk kartu, lalu ketuk kotak tujuan.</div>`;
+ const pool=c.querySelector('.pool'),tg=c.querySelector('.targets'),fb=mkFb(c);
+ let sel=null,errors=0,placed=0,dragged=null;const total=a.items.length;
+ const tbs=a.targets.map((t,ti)=>{
+  const d=document.createElement('div');d.className='tbox';d.innerHTML=`<div class="lb">${H(t.label)}</div><div class="drops"></div>`;
+  d.onclick=e=>{if(e.target.closest('.chip'))return;if(sel)tryPlace(sel,ti);else setFb(fb,false,'Pilih (ketuk) kartu pecahan dulu, baru ketuk kotak tujuan.')};
+  d.ondragover=e=>{e.preventDefault();d.classList.add('over')};
+  d.ondragleave=()=>d.classList.remove('over');
+  d.ondrop=e=>{e.preventDefault();d.classList.remove('over');if(dragged)tryPlace(dragged,ti)};
+  tg.appendChild(d);return d;
+ });
+ shuffle(a.items).forEach(v=>{
+  const ch=document.createElement('span');ch.className='chip';ch.dataset.v=v;ch.draggable=true;ch.innerHTML=H(v);
+  ch.onclick=()=>{if(ch.classList.contains('okc'))return;if(sel&&sel!==ch)sel.classList.remove('sel');sel=(sel===ch)?null:ch;ch.classList.toggle('sel',sel===ch)};
+  ch.ondragstart=e=>{dragged=ch;try{e.dataTransfer.setData('text/plain',v)}catch(x){}};
+  pool.appendChild(ch);
+ });
+ function tryPlace(ch,ti){
+  const t=a.targets[ti],cnt=tbs[ti].querySelectorAll('.chip').length;
+  if(t.accepts.includes(ch.dataset.v)&&cnt<(t.cap||t.accepts.length)){
+   tbs[ti].querySelector('.drops').appendChild(ch);ch.classList.remove('sel');ch.classList.add('okc');ch.draggable=false;sel=null;dragged=null;placed++;
+   if(placed===total){setFb(fb,true,(a.exp||'Hebat! Semua sudah tepat.'));done({score:Math.max(2,10-2*errors),errors})}
+   else setFb(fb,true,'Tepat! Lanjutkan kartu berikutnya.');
+  }else{
+   errors++;ch.classList.add('shake');setTimeout(()=>ch.classList.remove('shake'),450);
+   setFb(fb,false,'Belum tepat. Coba tempatkan di kotak yang lain.');
+  }
+ }
+}
+
+/* ========== DATA BELAJAR ========== */
+const MATERI=[
+{judul:'Mengenal Pecahan Biasa',ikon:'🍰',
+ konsep:`<p>Pecahan biasa adalah bilangan yang menyatakan <b>bagian dari suatu keseluruhan</b> yang dibagi menjadi beberapa bagian <b>sama besar</b>. Pecahan ditulis dengan dua bilangan yang dipisahkan sebuah garis, misalnya 1/2, 1/4, atau 3/4.</p><p>Syarat utama pecahan adalah pembagiannya harus <b>adil</b>. Jika sebuah roti dipotong menjadi 4 bagian yang tidak sama besar, potongan itu tidak boleh disebut 1/4. Namun jika roti dibagi 4 sama besar dan kamu mengambil 1 potong, maka kamu mengambil 1/4 roti.</p><p>Pecahan ada di sekitar kita: setengah gelas air, seperempat jam, atau tiga per empat lapangan. Dengan memahami pecahan, kamu dapat membagi dan mengukur sesuatu dengan tepat.</p>`,
+ vis:()=>fig(frPie(1,2),1,2)+fig(frPie(1,4),1,4)+fig(frPie(3,4),3,4)+fig(frBar(3,8),3,8),
+ lokal:`Nelayan di pesisir <b>Teluk Tomini</b> sering membagi seekor ikan cakalang besar menjadi 4 bagian sama besar untuk 4 keluarga. Setiap keluarga menerima 1/4 ikan. Jika potongannya tidak sama besar, tentu ada keluarga yang merasa dirugikan.`,
+ kbc:`Berbagi dengan adil adalah wujud kasih sayang kepada sesama. Pecahan mengajarkan kita bahwa setiap orang berhak mendapat bagian yang sama tanpa saling iri.`,
+ ayat:AYAT.a1,
+ act:{type:'mc',q:'Sebuah semangka dibagi 8 bagian sama besar. Adi mengambil 3 bagian. Pecahan yang menyatakan bagian Adi adalah ...',opts:['3/8','8/3','3/5'],ans:0,exp:'Pembilang 3 adalah bagian yang diambil, penyebut 8 adalah seluruh bagian sama besar.'}},
+{judul:'Pembilang dan Penyebut',ikon:'🔢',
+ konsep:`<p>Setiap pecahan terdiri atas tiga bagian: <b>pembilang</b> (bilangan di atas garis), <b>penyebut</b> (bilangan di bawah garis), dan <b>garis pecahan</b> sebagai pemisah.</p><p><b>Penyebut</b> menunjukkan berapa banyak bagian sama besar yang membentuk satu keseluruhan. <b>Pembilang</b> menunjukkan berapa bagian yang sedang kita ambil atau perhatikan. Pada pecahan 5/8, keseluruhan dibagi menjadi 8 bagian dan 5 bagian di antaranya diperhatikan.</p><p>Penyebut tidak boleh nol, karena sesuatu tidak mungkin dibagi menjadi nol bagian. Pembilang yang lebih kecil dari penyebut membuat pecahan bernilai kurang dari satu keseluruhan.</p>`,
+ vis:()=>`<figure><div style="font-size:2.4rem">${frac('5','8')}</div><figcaption>5 = pembilang • 8 = penyebut</figcaption></figure>`+fig(frBar(5,8),5,8),
+ lokal:`Pak Rahman memiliki 5 keramba ikan nila di <b>Danau Limboto</b>. Pada hari Senin 2 keramba dipanen. Bagian yang dipanen ditulis 2/5: angka 5 adalah penyebut (seluruh keramba) dan angka 2 adalah pembilang (keramba yang dipanen).`,
+ kbc:`Mencintai lingkungan berarti memanen dengan secukupnya. Keramba yang tidak dipanen sekaligus memberi kesempatan ikan tumbuh, sebagai kasih sayang kepada makhluk Allah.`,
+ ayat:AYAT.a2,
+ act:{type:'dd',prompt:'Perhatikan pecahan 3/5. Tempatkan istilah yang tepat pada setiap keterangan.',items:['Pembilang','Penyebut','Garis pecahan'],targets:[{label:'Angka 3 pada pecahan 3/5',accepts:['Pembilang']},{label:'Angka 5 pada pecahan 3/5',accepts:['Penyebut']},{label:'Tanda pemisah di antara kedua angka',accepts:['Garis pecahan']}],exp:'Pembilang di atas, penyebut di bawah, dan keduanya dipisahkan garis pecahan.'}},
+{judul:'Membaca, Menulis, dan Menggambar Pecahan',ikon:'✏️',
+ konsep:`<p>Pecahan dibaca dengan kata "per". Pecahan 1/2 dibaca <b>satu per dua</b> atau setengah, 1/4 dibaca <b>satu per empat</b> atau seperempat, dan 3/4 dibaca <b>tiga per empat</b>. Bilangan di atas dibaca lebih dahulu.</p><p>Pecahan dapat digambar dengan beberapa model: <b>lingkaran</b>, <b>batang</b> (persegi panjang), atau <b>sekumpulan benda</b>. Bagi seluruh model menjadi bagian sama besar sebanyak penyebut, lalu warnai bagian sebanyak pembilang.</p><p>Untuk menulis pecahan dari gambar, hitung dahulu seluruh bagian (penyebut), lalu hitung bagian yang diarsir (pembilang).</p>`,
+ vis:()=>fig(frPie(3,8),3,8)+fig(frBar(2,5),2,5)+fig(frBar(5,6),5,6),
+ lokal:`Gorontalo dikenal sebagai daerah penghasil jagung di <b>dataran agraris</b>. Sebuah kebun dibagi 8 petak sama luas dan 3 petak ditanami jagung untuk bahan <i>binte biluhuta</i> (sup jagung khas Gorontalo). Luas tanaman jagung ditulis 3/8 dan dibaca "tiga per delapan".`,
+ kbc:`Mengambil secukupnya dan tidak berlebihan adalah akhlak mulia. Menulis bagian dengan benar juga melatih kejujuran dan ketelitian.`,
+ ayat:AYAT.a3,
+ act:{type:'mc',q:'Pecahan 3/4 dibaca ...',opts:['tiga per empat','empat per tiga','tiga tambah empat'],ans:0,exp:'Pembilang dibaca lebih dahulu, kemudian kata "per", lalu penyebut.'}},
+{judul:'Pecahan Senilai',ikon:'⚖️',
+ konsep:`<p><b>Pecahan senilai</b> adalah pecahan yang tampilannya berbeda tetapi nilainya sama. Contohnya 1/2 = 2/4 = 4/8. Jika kamu menggambar ketiganya dengan model batang, bagian yang diwarnai akan sama panjang.</p><p>Cara membuat pecahan senilai: <b>kalikan</b> pembilang dan penyebut dengan bilangan yang <b>sama</b> (bukan nol). Misalnya 1/3 × 2/2 menghasilkan 2/6. Kamu juga boleh <b>membagi</b> pembilang dan penyebut dengan bilangan yang sama untuk mendapat bentuk yang lebih sederhana, misalnya 4/8 menjadi 1/2.</p>`,
+ vis:()=>fig(frBar(1,2,200),1,2)+fig(frBar(2,4,200),2,4)+fig(frBar(4,8,200),4,8),
+ lokal:`Seorang petani di dataran agraris Gorontalo memanen setengah ladang jagungnya. Jika ladang itu dibagi 4 petak, ia memanen 2/4. Jika dibagi 8 petak, ia memanen 4/8. Luas yang dipanen sama saja, hanya cara menuliskannya yang berbeda.`,
+ kbc:`Kejujuran takaran membuat nilai tetap sama di mata siapa pun. Dalam hidup, bersikap jujur dan adil membuat hubungan antarsesama semakin dekat.`,
+ ayat:AYAT.a4,
+ act:{type:'dd',prompt:'Kelompokkan pecahan senilai ke pecahan yang tepat.',items:['2/4','4/8','2/6','3/9'],targets:[{label:'Senilai dengan 1/2',accepts:['2/4','4/8'],cap:2},{label:'Senilai dengan 1/3',accepts:['2/6','3/9'],cap:2}],exp:'2/4 dan 4/8 sama dengan 1/2, sedangkan 2/6 dan 3/9 sama dengan 1/3.'}},
+{judul:'Membandingkan dan Mengurutkan Pecahan',ikon:'📊',
+ konsep:`<p>Ada tiga cara membandingkan pecahan. <b>(1) Penyebut sama</b>: pecahan dengan pembilang lebih besar nilainya lebih besar, misalnya 5/8 lebih besar daripada 3/8. <b>(2) Pembilang sama</b>: pecahan dengan penyebut lebih kecil nilainya lebih besar, misalnya 1/2 lebih besar daripada 1/4, sebab potongan yang dibagi sedikit akan lebih besar. <b>(3) Penyebut berbeda</b>: samakan dahulu penyebutnya menggunakan pecahan senilai.</p><p>Untuk mengurutkan, bandingkan semua pecahan lalu susun dari yang terkecil ke terbesar atau sebaliknya. Gunakan tanda &lt;, &gt;, atau =.</p>`,
+ vis:()=>fig(frBar(1,8,160),1,8)+fig(frBar(3,8,160),3,8)+fig(frBar(5,8,160),5,8),
+ lokal:`Tiga nelayan di Teluk Tomini membagi hasil tangkapan menjadi 8 bagian. Pak Amir menerima 5/8, Pak Hasan 2/8, dan Pak Yusuf 1/8. Karena penyebutnya sama, kita cukup membandingkan pembilangnya: 5/8 adalah bagian yang paling besar.`,
+ kbc:`Perbedaan bagian tidak boleh menimbulkan iri atau sombong. Ajaran tolong-menolong membuat nelayan yang menerima bagian lebih besar tetap membantu yang lain.`,
+ ayat:AYAT.a5,
+ act:{type:'mc',q:'Pecahan yang paling besar di antara 3/8, 5/8, dan 1/8 adalah ...',opts:['3/8','5/8','1/8'],ans:1,exp:'Penyebut sama, jadi bandingkan pembilang: 5 > 3 > 1.'}},
+{judul:'Penjumlahan dan Pengurangan Pecahan Berpenyebut Sama',ikon:'➕',
+ konsep:`<p>Pecahan yang penyebutnya sama dapat dijumlahkan atau dikurangkan dengan mudah. Caranya: <b>jumlahkan atau kurangkan pembilangnya</b>, sedangkan <b>penyebutnya tetap</b>. Contohnya 2/7 + 3/7 = 5/7 dan 5/7 − 2/7 = 3/7.</p><p>Mengapa penyebut tidak dijumlahkan? Karena penyebut hanya menunjukkan ukuran potongan. Dua potong tujuhan ditambah tiga potong tujuhan menghasilkan lima potong tujuhan, bukan potongan berukuran lain.</p><p>Jika hasil pecahannya sama dengan penyebut, misalnya 7/7, berarti kita memperoleh satu keseluruhan utuh.</p>`,
+ vis:()=>fig(frBar(2,7,170),2,7)+`<figure><div style="font-size:2rem">+</div></figure>`+fig(frBar(3,7,170),3,7)+`<figure><div style="font-size:2rem">=</div></figure>`+fig(frBar(5,7,170),5,7),
+ lokal:`Di Pasar Limboto, Ibu Rukmini membeli 2/5 kg cabai pagi hari dan 1/5 kg lagi siang hari. Jumlahnya 2/5 + 1/5 = 3/5 kg. Penyebut 5 tetap, hanya pembilangnya yang ditambahkan.`,
+ kbc:`Setiap potongan kecil yang kita kumpulkan dengan sabar bisa menjadi besar manfaatnya. Cinta ilmu tumbuh dari belajar sedikit demi sedikit setiap hari.`,
+ ayat:AYAT.a6,
+ act:{type:'mc',q:'Hasil dari 1/6 + 2/6 adalah ...',opts:['3/6','3/12','2/36'],ans:0,exp:'Penyebut tetap 6, pembilang dijumlahkan: 1 + 2 = 3, sehingga hasilnya 3/6.'}}
+];
+
+/* ========== BELAJAR ========== */
+let belIdx=0;
+function renderBel(){
+ const i=belIdx,m=MATERI[i],a=m.ayat;
+ $('#belTitle').textContent='Slide '+(i+1)+' dari 6';
+ $('#belCnt').textContent=S.bel.filter(Boolean).length+'/6 tuntas';
+ $('#belBar').style.width=(S.bel.filter(Boolean).length/6*100)+'%';
+ $('#belBody').className='glass slidecard';void $('#belBody').offsetWidth;
+ $('#belBody').innerHTML=`<div class="row" style="margin-bottom:8px"><span style="font-size:2.2rem">${m.ikon}</span><h2 style="color:var(--em3)">${m.judul}</h2></div>
+ <div class="box kon"><h4>📘 Uraian Konsep</h4>${H(m.konsep)}</div>
+ <div class="vis">${m.vis()}</div>
+ <div class="grid2"><div class="box lok"><h4>🌊 Konteks Lokal Gorontalo</h4><p>${H(m.lokal)}</p></div><div class="box kbc"><h4>💗 Kurikulum Berbasis Cinta</h4><p>${H(m.kbc)}</p></div></div>
+ <div class="ayat"><div class="ref">📖 Integrasi Ayat Al-Qur'an</div><div class="ar">${a.ar}</div><div class="ref">${a.ref}</div><div class="tr">"${a.id}"</div><div style="font-size:.92em"><b>Korelasi konsep:</b> ${H(a.kor)}</div></div>
+ <div class="act"><h4>🎯 Tantangan Slide ${i+1} (wajib diselesaikan)</h4><div id="belAct"></div></div>`;
+ const c=$('#belAct');
+ if(S.bel[i]){c.innerHTML='<div class="fb ok" style="display:block">✅ Tantangan slide ini sudah kamu selesaikan. Silakan lanjut!</div>'}
+ else runAct(c,m.act,{once:false},()=>{S.bel[i]=true;updBelNav();$('#belCnt').textContent=S.bel.filter(Boolean).length+'/6 tuntas';$('#belBar').style.width=(S.bel.filter(Boolean).length/6*100)+'%'});
+ updBelNav();$('#belajar').scrollTop=0;
+}
+function updBelNav(){
+ const i=belIdx,last=i===5;
+ $('#belPrev').disabled=i===0;
+ const n=$('#belNext');n.disabled=!S.bel[i];
+ n.innerHTML=last?'Selesai Belajar 🎉':'Selanjutnya ➜';
+}
+function belMove(d){
+ if(d>0&&belIdx===5){
+  if(!S.bel.every(Boolean))return;
+  const first=!S.bermainOpen;S.bermainOpen=true;
+  if(first)openM(`<div style="text-align:center"><div style="font-size:3.2rem">🎉🔓</div><h2>Luar Biasa, ${S.name}!</h2><p>Seluruh materi sudah kamu tuntaskan. Menu <b>BERMAIN</b> kini terbuka. Selamat bermain sambil belajar!</p><div class="row c" style="margin-top:14px"><button class="btn gold" onclick="closeM();go('menu')">Ke Menu Utama</button></div></div>`);
+  go('menu');return;
+ }
+ belIdx=Math.max(0,Math.min(5,belIdx+d));renderBel();
+}
+
+/* ========== DATA BERMAIN ========== */
+const PLAY=[
+{tipe:'Menjodohkan',
+ stim:`Pagi itu matahari baru naik di pesisir Teluk Tomini, Gorontalo. Perahu kecil milik Pak Amir, Pak Hasan, dan Pak Yusuf merapat di dermaga membawa seekor ikan cakalang yang sangat besar. Mereka menangkapnya bersama-sama sejak subuh. Sebelum dijual, ketiganya sepakat membagi tubuh ikan itu menjadi 8 bagian yang sama besar. Karena Pak Amir paling banyak membawa umpan, ia menerima 3 bagian. Pak Hasan yang mendayung dan menarik jaring menerima 4 bagian. Pak Yusuf, nelayan termuda yang baru belajar melaut, menerima 1 bagian. Pak Yusuf tidak mengeluh sedikit pun, sebab ia tahu bahwa membagi dengan penuh kasih sayang akan mempererat persaudaraan sesama nelayan. Kini tugasmu adalah menyatakan bagian masing-masing sebagai pecahan dari seluruh ikan. Jodohkan setiap keterangan dengan pecahan yang tepat!`,
+ act:{type:'dd',prompt:'Jodohkan kartu pecahan dengan keterangan yang sesuai.',items:['3/8','4/8','1/8','8/8'],targets:[{label:'Bagian Pak Amir (3 bagian dari 8)',accepts:['3/8']},{label:'Bagian Pak Hasan (4 bagian dari 8)',accepts:['4/8']},{label:'Bagian Pak Yusuf (1 bagian dari 8)',accepts:['1/8']},{label:'Seluruh ikan cakalang',accepts:['8/8']}],exp:'Penyebut 8 menunjukkan seluruh bagian, pembilang menunjukkan bagian yang diterima.'}},
+{tipe:'Mengurutkan',
+ stim:`Setiap Jumat pagi, siswa MIN di tepi Danau Limboto bergotong royong membersihkan eceng gondok yang menutupi permukaan danau. Eceng gondok yang tumbuh terlalu rapat membuat air kekurangan cahaya sehingga ikan nila dan ikan mujair sulit bernapas. Pembimbing membagi area pembersihan menjadi 10 petak yang sama luas. Lima kelompok bertugas pada hari itu. Kelompok Melati berhasil membersihkan 5 petak, kelompok Mawar 2 petak, kelompok Anggrek 9 petak, kelompok Teratai 7 petak, dan kelompok Kenanga 1 petak. Hasil kerja setiap kelompok dinyatakan sebagai pecahan dari seluruh petak. Mencintai lingkungan berarti merawat danau sebagai rumah bagi makhluk ciptaan Allah. Urutkan pecahan hasil kerja kelima kelompok dari yang paling kecil sampai yang paling besar!`,
+ act:{type:'order',q:'Urutkan dari yang TERKECIL ke TERBESAR:',items:['1/10','2/10','5/10','7/10','9/10'],exp:'Penyebut sama, sehingga cukup membandingkan pembilangnya: 1 < 2 < 5 < 7 < 9.'}},
+{tipe:'Drag & Drop',
+ stim:`Di dataran agraris Paguyaman, Kabupaten Boalemo, Pak Sofyan memiliki enam ladang jagung. Setiap ladang dibagi menjadi beberapa petak yang sama luas, lalu ia mencatat petak yang sudah dipanen. Ladang pertama dibagi menjadi 4 petak dan 1 petak sudah dipanen. Ladang kedua dibagi menjadi 8 petak dan 3 petak sudah dipanen. Ladang ketiga dibagi 4 petak dan 2 petak telah dipanen. Ladang keempat dibagi 8 petak dan 4 petak dipanen. Ladang kelima dibagi 8 petak dan 5 petak dipanen. Ladang keenam dibagi 4 petak dan 3 petak dipanen. Pak Sofyan ingin tahu ladang mana yang panennya belum mencapai setengah, tepat setengah, dan lebih dari setengah. Ia bersyukur karena tanah subur adalah nikmat Allah yang harus dijaga. Seret setiap pecahan ke kelompok yang tepat!`,
+ act:{type:'dd',prompt:'Kelompokkan pecahan hasil panen ke kotak yang tepat.',items:['1/4','3/8','2/4','4/8','5/8','3/4'],targets:[{label:'Kurang dari setengah',accepts:['1/4','3/8'],cap:2},{label:'Tepat setengah',accepts:['2/4','4/8'],cap:2},{label:'Lebih dari setengah',accepts:['5/8','3/4'],cap:2}],exp:'Setengah sama dengan 2/4 atau 4/8. 1/4 dan 3/8 lebih kecil, sedangkan 5/8 dan 3/4 lebih besar.'}},
+{tipe:'Pilihan Ganda',
+ stim:`Menjelang berbuka puasa, Fatimah, siswa kelas IV di sebuah madrasah di Gorontalo, membawa 12 butir kurma dari rumah. Ibunya berpesan bahwa Rasulullah mengajarkan umat Islam untuk berbagi makanan dengan tetangga, karena berbagi akan menumbuhkan kasih sayang dan menjauhkan sifat kikir. Fatimah lalu membagi kurma itu menjadi 4 kelompok yang sama banyak. Satu kelompok ia berikan kepada Pak Rahmat, penjaga masjid yang tinggal sendirian. Satu kelompok lagi ia berikan kepada tetangga sebelah rumah yang sedang sakit. Dua kelompok sisanya ia simpan untuk keluarganya. Fatimah merasa bahagia karena kebaikan kecil itu membuat hati orang lain gembira. Perhatikan bahwa pecahan juga dapat menyatakan bagian dari sekumpulan benda. Berapa butir kurma yang Fatimah berikan kepada Pak Rahmat?`,
+ act:{type:'mc',q:'Banyak kurma yang diberikan kepada Pak Rahmat (1/4 dari 12 butir) adalah ...',opts:['3 butir','4 butir','6 butir'],ans:0,exp:'12 dibagi 4 sama dengan 3, sehingga 1/4 dari 12 butir adalah 3 butir.'}},
+{tipe:'Pilihan Ganda Kompleks',
+ stim:`Sore hari di tepi Teluk Tomini, Nabila dan teman-temannya mengamati perahu yang bersandar di dermaga. Mereka menghitung ada 8 perahu seluruhnya. Tiga perahu bercat biru, sedangkan sisanya bercat putih. Guru meminta mereka menuliskan beberapa pernyataan tentang pecahan dari hasil pengamatan itu. Nabila mengingat bahwa pecahan senilai dapat diperoleh dengan mengalikan pembilang dan penyebut dengan bilangan yang sama. Dalam kebersamaan itu mereka juga memungut sampah plastik di pantai, karena menjaga laut berarti menyayangi ikan dan penyu yang hidup di dalamnya. Anak-anak mencatat hasil pengamatan dengan teliti di buku kecil mereka, kemudian saling memeriksa pekerjaan teman agar tidak ada kesalahan hitung. Perhatikan pernyataan-pernyataan di bawah ini, lalu pilih SEMUA pernyataan yang benar!`,
+ act:{type:'mcc',q:'Pilih SEMUA pernyataan yang benar:',opts:['Perahu biru adalah 3/8 dari seluruh perahu','Perahu putih adalah 5/8 dari seluruh perahu','3/8 senilai dengan 6/16','Perahu putih adalah 8/5 dari seluruh perahu','Penyebut pecahan perahu biru adalah 3'],ans:[0,1,2],exp:'Perahu biru 3/8, perahu putih 5/8, dan 3/8 = 6/16. Penyebutnya 8 dan pecahan tidak ditulis 8/5.'}},
+{tipe:'Menjodohkan',
+ stim:`Karawo adalah kerajinan sulam khas Gorontalo yang dikerjakan dengan teliti oleh para ibu pengrajin. Sebelum menyulam, Bu Halima membagi selembar kain menjadi bagian-bagian yang sama besar agar motifnya rapi. Pada satu lembar, ia membagi kain menjadi 2 bagian, 4 bagian, 3 bagian, dan 6 bagian, dan pada lembar lain menjadi 8 bagian, untuk motif yang berbeda. Cucunya, Aisyah, membantu menandai bagian yang akan dihias. Aisyah menemukan bahwa beberapa tanda pada kain yang dibagi berbeda ternyata luasnya sama. Misalnya, hiasan yang menempati satu dari dua bagian luasnya sama dengan hiasan yang menempati tiga dari enam bagian. Kesabaran dan ketelitian dalam berkarya merupakan wujud cinta pada budaya sendiri. Jodohkan setiap pecahan dengan pecahan yang senilai dengannya!`,
+ act:{type:'dd',prompt:'Jodohkan pecahan dengan pecahan senilainya.',items:['3/6','2/8','4/6','6/8'],targets:[{label:'Senilai dengan 1/2',accepts:['3/6']},{label:'Senilai dengan 1/4',accepts:['2/8']},{label:'Senilai dengan 2/3',accepts:['4/6']},{label:'Senilai dengan 3/4',accepts:['6/8']}],exp:'3/6 = 1/2, 2/8 = 1/4, 4/6 = 2/3, dan 6/8 = 3/4.'}},
+{tipe:'Mengurutkan',
+ stim:`Selepas salat Asar, Bu Guru membawa satu loyang kue bingka ke madrasah di tepi Danau Limboto. Ia ingin mengajarkan sikap berbagi sekaligus pecahan kepada murid-muridnya. Lima kelompok mendapat potongan kue dari loyang yang sama besar. Kelompok pertama memotong loyangnya menjadi 2 bagian sama besar, lalu mengambil 1 bagian. Kelompok kedua memotong menjadi 3 bagian dan mengambil 1 bagian. Kelompok ketiga memotong menjadi 4 bagian, kelompok keempat 6 bagian, dan kelompok kelima 8 bagian, masing-masing mengambil 1 bagian. Bu Guru bertanya, siapa yang mendapat potongan terbesar? Ia mengingatkan bahwa semakin banyak kue dipotong, semakin kecil setiap potongannya. Siswa-siswa tetap berbagi dengan gembira sebab Allah mencintai orang yang saling berbagi. Urutkan pecahan potongan kelima kelompok dari yang terbesar ke yang terkecil!`,
+ act:{type:'order',q:'Urutkan dari yang TERBESAR ke TERKECIL:',items:['1/2','1/3','1/4','1/6','1/8'],exp:'Pembilang sama, maka penyebut yang lebih kecil menghasilkan potongan yang lebih besar.'}},
+{tipe:'Drag & Drop',
+ stim:`Di pasar tradisional Limboto, Ibu Rukmini menimbang jagung pipil hasil panen kebun keluarganya di dataran agraris Gorontalo. Pada pagi hari, ia mengisi karung hingga 2/8 bagian dari kapasitas gudang. Pada siang hari ditambah 3/8 bagian lagi. Sore harinya, sebelum pulang, ia menjual sebagian dan menyisihkan sebagian lain untuk disedekahkan kepada tetangga yang kurang mampu. Ibu Rukmini mencatat banyak operasi hitung di buku kecilnya. Karena semua penyebutnya sama, ia hanya perlu menjumlah atau mengurangkan pembilangnya, sedangkan penyebutnya tetap. Ia selalu jujur menimbang karena tahu bahwa takaran yang adil mendatangkan berkah dan membuat pembeli percaya kepadanya. Seret setiap operasi hitung ke kotak hasil yang tepat!`,
+ act:{type:'dd',prompt:'Seret setiap operasi hitung ke kotak hasilnya.',items:['2/8 + 3/8','7/8 − 2/8','1/8 + 2/8','6/8 − 3/8'],targets:[{label:'Hasilnya 5/8',accepts:['2/8 + 3/8','7/8 − 2/8'],cap:2},{label:'Hasilnya 3/8',accepts:['1/8 + 2/8','6/8 − 3/8'],cap:2}],exp:'Penyebut tetap 8. 2+3=5, 7−2=5, 1+2=3, dan 6−3=3.'}},
+{tipe:'Pilihan Ganda',
+ stim:`Pak Ismail memelihara ikan nila di keramba apung Danau Limboto. Keramba itu terdiri atas 5 kolam jaring yang sama besar. Hari Senin, ia memanen ikan dari 3 kolam, lalu pada hari Selasa ia memanen dari 1 kolam lagi. Sebelum memanen, Pak Ismail selalu membaca doa dan memastikan ikan kecil dilepas kembali agar kelestarian danau terjaga. Ia mengajarkan anaknya bahwa mengambil rezeki tidak boleh berlebihan. Sebagian ikan ia berikan kepada panti asuhan di Kota Gorontalo. Ia menulis catatan panen dalam bentuk pecahan agar mudah dipahami anaknya, Rafli. Catatan itu juga membantu Pak Ismail merencanakan masa tanam dan masa panen berikutnya dengan lebih baik. Berapa bagian keramba yang telah dipanen selama dua hari?`,
+ act:{type:'mc',q:'Bagian keramba yang dipanen selama Senin dan Selasa adalah ...',opts:['4/10','4/5','2/5'],ans:1,exp:'3/5 + 1/5 = 4/5. Penyebut tetap 5, pembilang dijumlahkan.'}},
+{tipe:'Pilihan Ganda Kompleks',
+ stim:`Pesisir Teluk Tomini di Boalemo mengalami abrasi sehingga warga bersama siswa madrasah menanam bibit mangrove. Pantai yang akan ditanami dibagi menjadi 12 petak yang sama luas. Siswa menanam bibit pada 5 petak, warga desa menanam pada 4 petak, dan 3 petak sisanya akan ditanami pekan berikutnya. Allah mengingatkan bahwa kerusakan di darat dan di laut timbul akibat ulah manusia, sehingga manusia wajib memperbaikinya dengan penuh kasih sayang kepada alam. Mangrove melindungi pantai dari gelombang dan menjadi rumah bagi kepiting serta ikan kecil. Dengan hitungan pecahan, kepala desa membuat laporan kemajuan penanaman yang ditempel di balai desa supaya semua warga dapat membacanya. Pilih SEMUA pernyataan yang benar tentang laporan tersebut!`,
+ act:{type:'mcc',q:'Pilih SEMUA pernyataan yang benar:',opts:['Siswa menanam 5/12 bagian pantai','Warga menanam 4/12 bagian, senilai dengan 1/3','Petak yang tersisa adalah 3/12, senilai dengan 1/4','Siswa dan warga menanam 8/12 bagian pantai','Petak yang tersisa lebih dari 1/2 bagian pantai'],ans:[0,1,2],exp:'Siswa 5/12, warga 4/12 = 1/3, sisa 3/12 = 1/4. Siswa dan warga bersama 9/12, dan sisa kurang dari setengah.'}}
+];
+
+/* ========== BERMAIN ========== */
+let pi=0;
+function plyTotal(){return S.play.reduce((a,b)=>a+(b?b.score:0),0)}
+function renderPlay(){
+ const i=pi,p=PLAY[i];
+ $('#plyScore').textContent='Skor: '+plyTotal();
+ $('#plyBar').style.width=(S.play.length/10*100)+'%';
+ $('#plyBody').className='glass slidecard';void $('#plyBody').offsetWidth;
+ $('#plyBody').innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="color:var(--em3)">Tantangan ${i+1} dari 10</h2><span class="badge">${p.tipe}</span></div>
+ <div class="stim"><b>📖 Bacalah dengan cermat:</b><p>${H(p.stim)}</p></div>
+ <div class="act"><h4>🎮 Tantangan</h4><div id="plyAct"></div></div>
+ <div class="nav"><span></span><button class="btn gold" id="plyNext" disabled>${i===9?'Lihat Rekap 🏆':'Selanjutnya ➜'}</button></div>`;
+ runAct($('#plyAct'),p.act,{once:true},r=>{S.play[i]={score:r.score,tipe:p.tipe};$('#plyScore').textContent='Skor: '+plyTotal();$('#plyBar').style.width=((i+1)/10*100)+'%';$('#plyNext').disabled=false});
+ $('#plyNext').onclick=()=>{if(i===9){S.playDone=true;S.berlatihOpen=true;renderPlayRecap(false)}else{pi++;renderPlay()}};
+ $('#bermain').scrollTop=0;
+}
+function renderPlayRecap(fromMenu){
+ const tot=plyTotal(),perfect=S.play.filter(x=>x.score===10).length,acc=Math.round(tot);
+ $('#plyBar').style.width='100%';$('#plyScore').textContent='Skor: '+tot;
+ $('#plyBody').className='glass slidecard';
+ $('#plyBody').innerHTML=`<div style="text-align:center"><div style="font-size:3.4rem">${tot>=80?'🏆':tot>=60?'🌟':'💪'}</div><h2 style="color:var(--em3)">Rekap Performa Bermain</h2>
+ <p style="margin:.4em 0">Skor <b style="font-size:1.6em;color:var(--em2)">${tot}</b> / 100 • Akurasi <b>${acc}%</b> • Tantangan sempurna <b>${perfect}/10</b></p></div>
+ <table style="width:100%;border-collapse:collapse;margin:10px 0">${S.play.map((x,i)=>`<tr style="border-bottom:1px solid #d1fae5"><td style="padding:6px">No. ${i+1}</td><td>${x.tipe}</td><td style="text-align:right;font-weight:800">${x.score}/10 ${x.score===10?'⭐':''}</td></tr>`).join('')}</table>
+ <div class="box kbc"><p>${tot>=80?'Hebat! Kamu sudah memahami pecahan dengan baik.':'Terus semangat! Setiap kesalahan adalah kesempatan belajar.'} Menu <b>BERLATIH</b> kini terbuka. 🔓</p></div>
+ <div class="row c" style="margin-top:14px"><button class="btn ghost" onclick="replayPlay()">🔁 Main Lagi</button><button class="btn gold" onclick="go('menu')">Ke Menu Utama</button></div>`;
+ go('bermain');$('#bermain').scrollTop=0;
+}
+function replayPlay(){S.play=[];S.playDone=false;pi=0;renderPlay()}
+
+/* ========== DATA BERLATIH ========== */
+const LAT=[
+{lv:1,pt:8,
+ stim:`Danau Limboto di Provinsi Gorontalo adalah danau besar yang menjadi sumber penghidupan banyak keluarga. Pak Rahman, seorang pembudidaya, memiliki 8 keramba ikan nila berukuran sama di danau itu. Setiap pagi ia memeriksa keramba, memberi pakan secukupnya, dan memastikan air tidak tercemar sampah. Pada hari Rabu, 3 keramba siap dipanen karena ikannya sudah cukup besar, sedangkan 5 keramba lainnya masih harus dipelihara. Pak Rahman selalu berpesan kepada anaknya agar tidak serakah, sebab ikan kecil yang dibiarkan tumbuh adalah wujud kasih sayang kepada makhluk Allah dan investasi bagi masa depan. Ia mencatat hasil pemeriksaannya dalam buku catatan agar tidak keliru. Catatan itu juga ia tunjukkan kepada anaknya setiap sore supaya anak itu belajar membaca data dengan teliti dan jujur.`,
+ q:'Berdasarkan bacaan tersebut, pecahan yang menyatakan keramba yang siap dipanen adalah ...',opts:['3/5','3/8','5/8','8/3'],ans:1,
+ pb:'Keseluruhan keramba ada 8 (penyebut) dan yang siap dipanen 3 (pembilang), sehingga pecahannya 3/8.'},
+{lv:1,pt:8,
+ stim:`Hamparan jagung di dataran agraris Gorontalo membuat daerah ini dikenal sebagai lumbung jagung. Ibu Aminah memiliki kebun yang dibagi menjadi 9 petak sama luas. Pada awal musim hujan, ia dan suaminya menanam jagung pada 4 petak. Petak lainnya ia tanami kacang tanah dan sayuran bergantian agar tanah tidak cepat kehilangan kesuburannya. Cara bercocok tanam ini ia pelajari dari para tetua yang selalu berpesan agar tanah dirawat seperti merawat sahabat. Pada papan kecil di pinggir kebun, Aminah menuliskan pecahan 4/9 untuk menandai luas lahan jagung. Anaknya, Salsabila, membaca papan itu dan mencoba memahami arti angka-angkanya. Ia bertanya kepada ibunya mengapa angka di atas berbeda dengan angka di bawah garis, lalu mereka berdiskusi sambil memandangi hamparan kebun yang hijau.`,
+ q:'Pernyataan yang benar tentang pecahan 4/9 pada papan tersebut adalah ...',opts:['Pembilangnya 9 dan penyebutnya 4','Penyebutnya 4 menunjukkan banyak seluruh petak','Pembilangnya 4 menunjukkan petak berjagung dan penyebutnya 9 menunjukkan seluruh petak','Pembilangnya 4 menunjukkan petak yang tidak ditanami jagung'],ans:2,
+ pb:'Penyebut 9 = seluruh petak, pembilang 4 = petak yang ditanami jagung.'},
+{lv:1,pt:8,
+ stim:`Sekelompok siswa madrasah di Kota Gorontalo berkunjung ke Benteng Otanaha. Dari atas bukit mereka menikmati pemandangan Danau Limboto yang membentang luas. Guru membagikan lembar kerja berisi gambar sebuah persegi panjang yang dibagi menjadi 6 bagian sama besar. Lima bagian diarsir hijau, satu bagian dibiarkan putih. Guru berkata bahwa sebagaimana Allah menciptakan keindahan alam dengan keseimbangan, pecahan menggambarkan bagian dengan adil. Para siswa menuliskan pecahan arsiran dan berlatih membacanya dengan lantang agar tidak keliru ketika menjelaskan kepada teman. Salah seorang siswa bernama Dimas menyatakan bahwa bagian yang diarsir sama dengan lima per enam. Mereka kemudian mencocokkan jawaban itu dengan pecahan yang ditulis pada lembar kerja.`,
+ q:'Bagian yang diarsir dan cara membacanya yang tepat adalah ...',opts:['5/6 dibaca lima per enam','6/5 dibaca enam per lima','1/6 dibaca satu per enam','5/6 dibaca enam per lima'],ans:0,
+ pb:'Ada 6 bagian dan 5 diarsir, jadi 5/6. Dibaca pembilang dahulu: lima per enam.'},
+{lv:2,pt:10,
+ stim:`Ikan asin merupakan salah satu olahan hasil laut yang banyak dibuat oleh keluarga nelayan di pesisir Teluk Tomini. Bu Salma menjemur ikan asin cakalang di sebuah rak besar yang dibagi menjadi 3 bagian sama besar. Dua bagian rak telah terisi ikan. Menjelang sore awan gelap mulai datang, sehingga ikan harus dipindahkan ke rak kecil di dalam rumah. Rak kecil itu dibagi menjadi 12 bagian sama besar. Bu Salma ingin memindahkan ikan itu sehingga luas yang terisi pada rak kecil sama dengan luas yang terisi pada rak besar. Ia teringat pesan gurunya bahwa pecahan senilai diperoleh dengan mengalikan pembilang dan penyebut dengan bilangan yang sama. Dengan bekerja teliti, ia menjaga hasil laut karunia Allah agar tidak terbuang sia-sia.`,
+ q:'Berapa bagian rak kecil yang harus terisi agar sama dengan 2/3 rak besar?',opts:['6/12','4/12','10/12','8/12'],ans:3,
+ pb:'3 × 4 = 12, maka pembilang juga dikali 4: 2 × 4 = 8. Jadi 2/3 = 8/12.'},
+{lv:2,pt:10,
+ stim:`Empat kelompok siswa madrasah melakukan kegiatan penghijauan di tepi Danau Limboto. Setiap kelompok mendapat lahan yang luasnya sama, tetapi lahan tersebut dibagi dengan cara yang berbeda. Kelompok A menanam bibit pada 3/10 bagian lahan, kelompok B menanam pada 3/4 bagian, kelompok C pada 3/8 bagian, dan kelompok D pada 3/5 bagian. Pembina meminta setiap kelompok membuat tabel hasil kerja dan membandingkannya. Di dalam tabel, pembilang semua pecahan sama, yaitu 3, tetapi penyebutnya berbeda. Pembina berpesan bahwa menanam pohon adalah amal jariyah, sebab pohon memberi keteduhan, menahan erosi, dan menjadi rumah bagi burung. Para siswa pun saling membantu tanpa membedakan siapa yang bekerja lebih sedikit atau lebih banyak.`,
+ q:'Kelompok yang menanam bibit pada bagian lahan paling luas adalah ...',opts:['Kelompok A','Kelompok B','Kelompok C','Kelompok D'],ans:1,
+ pb:'Pembilang sama, maka penyebut terkecil menghasilkan pecahan terbesar. Penyebut terkecil adalah 4, sehingga 3/4 yang terbesar (Kelompok B).'},
+{lv:2,pt:10,
+ stim:`Setiap hari Jumat, para nelayan di pesisir Teluk Tomini menyisihkan sebagian hasil tangkapan untuk dibagikan kepada keluarga yang membutuhkan. Selama empat hari berturut-turut, hasil lelang ikan setiap hari dibagi menjadi 12 bagian sama besar. Bagian yang disedekahkan pada hari Senin adalah 5/12, hari Selasa 1/12, hari Rabu 7/12, dan hari Kamis 3/12 dari hasil lelang pada hari itu. Ketua kelompok nelayan mencatat bagian itu di papan pengumuman agar warga dapat melihatnya secara terbuka. Kebiasaan berbagi seperti ini menumbuhkan kasih sayang dan menjaga kerukunan warga. Siswa MIN diminta menyusun catatan tersebut dari bagian yang paling kecil ke bagian yang paling besar sebagai tugas pecahan.`,
+ q:'Urutan pecahan yang benar dari yang terkecil ke terbesar adalah ...',opts:['7/12, 5/12, 3/12, 1/12','1/12, 5/12, 3/12, 7/12','1/12, 3/12, 5/12, 7/12','3/12, 1/12, 7/12, 5/12'],ans:2,
+ pb:'Penyebut sama, bandingkan pembilang: 1 < 3 < 5 < 7.'},
+{lv:2,pt:10,
+ stim:`Pelabuhan kecil di Tilamuta, Kabupaten Boalemo, selalu ramai ketika perahu nelayan kembali dari Teluk Tomini. Pak Salim membawa pulang 7/10 ton ikan cakalang hasil tangkapan semalam. Ia menimbang ikan itu dengan jujur di depan para pembeli. Sebanyak 4/10 ton ia jual kepada pedagang di pasar, sedangkan sisanya akan dibagikan kepada tetangga dan panti asuhan sebagai sedekah. Pak Salim meyakini bahwa harta yang dibagikan dengan ikhlas tidak akan berkurang, melainkan mendatangkan keberkahan dan mempererat kasih sayang antarwarga. Putrinya, Nur, bertugas mencatat jumlah ikan dalam buku laporan. Karena semua penyebutnya sama, Nur hanya perlu mengolah pembilangnya, sedangkan penyebutnya tetap. Setelah semua selesai, para nelayan lain ikut membantu membereskan jaring dan perahu sambil bercerita tentang laut yang tenang pagi itu.`,
+ q:'Berapa ton ikan yang akan disedekahkan Pak Salim?',opts:['3/10 ton','4/10 ton','11/10 ton','7/10 ton'],ans:0,
+ pb:'7/10 − 4/10 = 3/10. Penyebut tetap, pembilang dikurangkan.'},
+{lv:3,pt:12,
+ stim:`Kegiatan membersihkan eceng gondok di Danau Limboto dilakukan dua kelompok dalam waktu yang sama. Area pembersihan terdiri atas dua jalur yang sama luas. Jalur pertama dibagi menjadi 6 bagian sama besar dan dikerjakan Kelompok A, yang berhasil membersihkan 3 bagian. Jalur kedua dibagi menjadi 8 bagian sama besar dan dikerjakan Kelompok B, yang berhasil membersihkan 4 bagian. Hardi berpendapat bahwa Kelompok B bekerja lebih banyak karena 4 lebih besar daripada 3. Aulia tidak sependapat, tetapi ia belum menjelaskan alasannya. Ustazah mengingatkan bahwa dalam menilai pekerjaan teman, kita harus adil dan memakai alasan yang benar, bukan sekadar menebak. Ia juga menekankan bahwa menjaga kebersihan danau adalah bagian dari iman dan wujud cinta kepada tanah air.`,
+ q:'Manakah penalaran yang paling tepat untuk menyelesaikan perbedaan pendapat Hardi dan Aulia?',opts:['Hardi benar, sebab pembilang 4 lebih besar daripada 3','Kelompok A lebih banyak, sebab penyebut 6 lebih kecil daripada 8','Tidak dapat dibandingkan karena penyebutnya berbeda','Aulia benar, sebab 3/6 dan 4/8 sama-sama senilai 1/2'],ans:3,
+ pb:'3/6 = 1/2 dan 4/8 = 1/2, sehingga kedua kelompok membersihkan bagian yang sama luas. Pecahan berpenyebut berbeda tetap dapat dibandingkan dengan pecahan senilai.'},
+{lv:3,pt:12,
+ stim:`Panen raya jagung di dataran agraris Gorontalo selalu dirayakan dengan penuh syukur. Pak Yunus memanen 24 karung jagung dari ladangnya. Ia lalu membagi hasil panen itu dengan rencana berikut. Sebanyak 1/4 dari seluruh karung disedekahkan kepada warga yang membutuhkan. Sebanyak 1/3 dari seluruh karung dijual kepada pedagang di Pasar Limboto untuk membeli bibit musim depan. Sisanya disimpan di lumbung sebagai persediaan makanan keluarga. Pak Yunus mengajarkan kepada anaknya bahwa sebagian rezeki adalah hak orang lain, dan bahwa mengelola hasil bumi dengan bijak merupakan wujud syukur. Perhatikan bahwa pecahan dapat dipakai untuk menyatakan bagian dari sekumpulan benda, misalnya karung jagung. Seluruh hasil panen itu ditimbang dan dihitung bersama-sama oleh keluarga supaya tidak ada yang keliru.`,
+ q:'Berapa karung jagung yang disimpan di lumbung?',opts:['8 karung','10 karung','12 karung','14 karung'],ans:1,
+ pb:'1/4 × 24 = 6 karung disedekahkan; 1/3 × 24 = 8 karung dijual. Sisanya 24 − 6 − 8 = 10 karung.'},
+{lv:3,pt:12,
+ stim:`Dua keluarga nelayan di pesisir Teluk Tomini memperoleh bagian ikan dari hasil lelang yang besarnya sama setiap hari. Keluarga Pak Anwar menerima 3/8 bagian, sedangkan keluarga Pak Basri menerima 3/5 bagian dari ikan yang sama besar. Raka, siswa kelas IV, melihat catatan itu dan berkata, "Keluarga Pak Anwar menerima lebih banyak karena angka 8 lebih besar daripada angka 5." Bu Guru tersenyum dan meminta kelas menilai pernyataan Raka. Bu Guru menekankan bahwa kejujuran dalam menghitung penting agar pembagian rezeki berlangsung adil, sebagaimana perintah Allah agar menegakkan keadilan. Ia juga mengajak siswa tidak merasa malu jika keliru, sebab belajar dari kesalahan adalah tanda cinta kepada ilmu.`,
+ q:'Manakah penilaian yang paling tepat terhadap pernyataan Raka?',opts:['Raka benar, karena penyebut yang lebih besar berarti bagian lebih besar','Keduanya sama besar karena pembilangnya sama','Raka kurang tepat; potongan 1/8 lebih kecil daripada 1/5, sehingga 3/5 lebih besar dan Pak Basri memperoleh lebih banyak','Raka benar, karena Pak Anwar lebih dahulu menerima ikan'],ans:2,
+ pb:'Penyebut lebih besar berarti potongan lebih kecil. Karena 1/5 > 1/8, maka 3/5 > 3/8 dan Pak Basri menerima lebih banyak.'}
+];
+const LVN={1:'Level 1 – Dasar / Pemahaman',2:'Level 2 – Sedang / Aplikasi & Penerapan',3:'Level 3 – Tinggi / Penalaran HOTS & Pemecahan Masalah'};
+
+/* ========== BERLATIH ========== */
+let li=0;
+function startLat(){S.lat=[];li=0;renderLat();go('berlatih')}
+function exitLat(){openM(`<div style="text-align:center"><h2>Keluar dari Latihan?</h2><p>Jawabanmu pada latihan ini akan diulang dari awal jika kamu keluar sekarang.</p><div class="row c" style="margin-top:14px"><button class="btn ghost" onclick="closeM()">Lanjut Mengerjakan</button><button class="btn" onclick="closeM();go('menu')">Keluar ke Menu</button></div></div>`)}
+function renderLat(){
+ const q=LAT[li];
+ $('#latCnt').textContent='Soal '+(li+1)+'/10';
+ $('#latBar').style.width=(li/10*100)+'%';
+ $('#latBody').className='glass slidecard';void $('#latBody').offsetWidth;
+ $('#latBody').innerHTML=`<div class="row" style="justify-content:space-between"><h2 style="color:var(--em3)">Soal No. ${li+1}</h2><div class="row"><span class="lv lv${q.lv}">${LVN[q.lv].split(' – ')[0]} • ${LVN[q.lv].split(' – ')[1].split(' / ')[0]}</span><span class="badge">Bobot ${q.pt} poin</span></div></div>
+ <div class="stim"><b>📖 Stimulus:</b><p>${H(q.stim)}</p></div>
+ <div class="q">${H(q.q)}</div>
+ <div class="opts" id="latOpts"></div>
+ <div class="nav"><button class="btn ghost" ${li===0?'disabled':''} onclick="latMove(-1)">← Sebelumnya</button><button class="btn gold" id="latNext" onclick="latMove(1)" ${S.lat[li]===undefined?'disabled':''}>${li===9?'Selesai & Lihat Laporan 📄':'Selanjutnya ➜'}</button></div>`;
+ const box=$('#latOpts');
+ q.opts.forEach((t,i)=>{const b=document.createElement('button');b.className='opt'+(S.lat[li]===i?' sel':'');b.innerHTML=`<span class="L">${'ABCD'[i]}</span><span>${H(t)}</span>`;
+  b.onclick=()=>{S.lat[li]=i;[...box.children].forEach((x,j)=>x.classList.toggle('sel',j===i));$('#latNext').disabled=false};box.appendChild(b)});
+ $('#berlatih').scrollTop=0;
+}
+function latMove(d){
+ if(d>0&&li===9){finishLat();return}
+ li=Math.max(0,Math.min(9,li+d));renderLat();
+}
+function finishLat(){
+ let nilai=0;const lv={1:{b:0,t:0},2:{b:0,t:0},3:{b:0,t:0}};
+ LAT.forEach((q,i)=>{lv[q.lv].t++;if(S.lat[i]===q.ans){nilai+=q.pt;lv[q.lv].b++}});
+ S.res={nilai,lv};S.latDone=true;showReport();
+}
+function predikat(n){return n>=90?'Sangat Baik (A)':n>=75?'Baik (B)':n>=60?'Cukup (C)':'Perlu Bimbingan (D)'}
+
+/* ========== LAPORAN ========== */
+function showReport(){
+ const r=S.res,tgl=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ const tot=plyTotal(),perfect=S.play.filter(x=>x&&x.score===10).length;
+ const pct=k=>Math.round(r.lv[k].b/r.lv[k].t*100);
+ const ket=p=>p>=80?'Sangat Menguasai':p>=60?'Menguasai':p>=40?'Cukup':'Perlu Penguatan';
+ const rek=[];
+ if(pct(1)<67)rek.push('Perkuat pemahaman dasar tentang pembilang, penyebut, dan cara membaca pecahan menggunakan benda konkret (potongan kertas atau buah).');
+ if(pct(2)<67)rek.push('Berikan latihan tambahan pada pecahan senilai, perbandingan, serta penjumlahan dan pengurangan berpenyebut sama dengan soal cerita.');
+ if(pct(3)<67)rek.push('Latih penalaran bertahap: ajak siswa menjelaskan alasan jawaban, mengecek kesalahan penalaran teman, dan menyelesaikan soal dua langkah.');
+ if(!rek.length)rek.push('Pertahankan capaian. Berikan pengayaan berupa soal cerita kontekstual yang lebih kompleks dan ajak siswa menjadi tutor sebaya bagi temannya.');
+ const kbc=`${S.name} telah belajar pecahan dengan semangat cinta ilmu. Melalui konteks Teluk Tomini, Danau Limboto, dan dataran agraris Gorontalo, ananda dibiasakan berbagi dengan adil, menyayangi makhluk ciptaan Allah, menjaga kelestarian lingkungan, hidup rukun dan moderat, serta mencintai tanah air. ${r.nilai>=75?'Pertahankan sikap teliti, jujur, dan suka menolong teman.':'Teruslah belajar dengan sabar; setiap usaha yang tulus bernilai kebaikan di sisi Allah.'}`;
+ $('#rptArea').innerHTML=`
+ <div class="kop">${avatar(DEV.nama,DEV.foto)}<div><h2>LAPORAN HASIL BELAJAR</h2><div><b>Media Pembelajaran Interaktif "Pecahan Biasa"</b> – Matematika Kelas IV / Fase B</div><div style="font-size:.85em">Pengembang: ${DEV.nama} • ${DEV.asal} • ${DEV.email}</div></div></div>
+ <h3>A. Data Siswa</h3>
+ <table><tr><td width="32%"><b>Nama Lengkap</b></td><td>${S.name}</td></tr><tr><td><b>Kelas</b></td><td>${S.kelas}</td></tr><tr><td><b>Tanggal Pengerjaan</b></td><td>${tgl}</td></tr></table>
+ <h3>B. Rekapitulasi Performa Bermain</h3>
+ <table class="pg"><tr><th>Skor</th><th>Akurasi</th><th>Tantangan Sempurna</th></tr><tr><td><b>${tot} / 100</b></td><td><b>${tot}%</b></td><td><b>${perfect} dari 10</b></td></tr></table>
+ <table class="pg"><tr><th>No</th>${S.play.map((x,i)=>`<td>${i+1}</td>`).join('')}</tr><tr><th>Skor</th>${S.play.map(x=>`<td>${x?x.score:0}</td>`).join('')}</tr></table>
+ <h3>C. Rincian Performa Berlatih</h3>
+ <table class="pg"><tr><td width="32%"><b>Nilai Akhir</b></td><td><span class="big">${r.nilai}</span> / 100</td></tr><tr><td><b>Predikat</b></td><td><b>${predikat(r.nilai)}</b></td></tr></table>
+ <table class="pg"><tr><th>Level Soal</th><th>Benar</th><th>Penguasaan</th><th>Keterangan</th></tr>
+ ${[1,2,3].map(k=>`<tr><td>${LVN[k]}</td><td>${r.lv[k].b} / ${r.lv[k].t}</td><td><div class="lvbar"><i style="width:${pct(k)}%"></i></div> ${pct(k)}%</td><td>${ket(pct(k))}</td></tr>`).join('')}</table>
+ <h3>D. Catatan Kurikulum Berbasis Cinta</h3><p class="pg">${kbc}</p>
+ <h3>E. Rekomendasi Guru</h3><ul style="margin-left:20px">${rek.map(x=>`<li>${x}</li>`).join('')}</ul>
+ <h3>F. Rincian Jawaban &amp; Pembahasan</h3>
+ <table><tr><th>No</th><th>Level</th><th>Jawaban</th><th>Kunci</th><th>Hasil</th><th>Pembahasan</th></tr>
+ ${LAT.map((q,i)=>{const ok=S.lat[i]===q.ans;return `<tr><td>${i+1}</td><td>L${q.lv}</td><td>${S.lat[i]===undefined?'-':'ABCD'[S.lat[i]]}</td><td>${'ABCD'[q.ans]}</td><td>${ok?'✔ +'+q.pt:'✘ 0'}</td><td>${H(q.pb)}</td></tr>`}).join('')}</table>
+ <p style="text-align:center;font-size:.85em;margin-top:14px;color:#555">Laporan dihasilkan otomatis oleh MPI Pecahan Biasa • ${DEV.asal}</p>`;
+ go('laporan');
+}
+function dlPDF(){
+ const el=$('#rptArea');
+ if(window.html2pdf){
+  try{html2pdf().set({margin:8,filename:'Laporan_Pecahan_'+S.name.replace(/\s+/g,'_')+'.pdf',image:{type:'jpeg',quality:.95},html2canvas:{scale:2,useCORS:true},jsPDF:{unit:'mm',format:'a4',orientation:'portrait'}}).from(el).save();return}catch(e){}
+ }
+ window.print();
+}
+</script>
+</body>
+</html>
